@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Data</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Custom CSS styling goes here */
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Employee Data</h1>
+    <input type="text" id="searchInput" placeholder="Search Employees...">
+    <input type="text" id="searchProjectsInput" placeholder="Search Projects...">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Designation</th>
+          <th>Skills</th>
+        </tr>
+      </thead>
+      <tbody id="employeeTable">
+        <!-- Employee data will be dynamically inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // JSON object representing employee data
+    var jsonData = {
+      "employees": [
+        {
+          "id": 1,
+          "name": "Mr. A",
+          "designation": "Senior Developer",
+          "skills": ["JavaScript", "Python", "Java"],
+          "projects": [
+            {
+              "name": "Project A",
+              "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "team": [
+                {
+                  "name": "Alice",
+                  "role": "Developer"
+                },
+                {
+                  "name": "Bob",
+                  "role": "Designer"
+                },
+                {
+                  "name": null,
+                  "role": "Tester"
+                }
+              ],
+              "tasks": [
+                {
+                  "id": 1,
+                  "name": "Task 1",
+                  "status": "In Progress"
+                },
+                {
+                  "id": 2,
+                  "name": "Task 2",
+                  "status": "Completed"
+                },
+                {
+                  "id": 3,
+                  "name": "Task 3",
+                  "status": null
+                }
+              ]
+            },
+            {
+              "name": "Project B",
+              "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "team": [
+                {
+                  "name": "Alice",
+                  "role": "Developer"
+                },
+                {
+                  "name": null,
+                  "role": "Designer"
+                }
+              ],
+              "tasks": [
+                {
+                  "id": 1,
+                  "name": "Task 1",
+                  "status": "In Progress"
+                },
+                {
+                  "id": 2,
+                  "name": "Task 2",
+                  "status": "In Progress"
+                },
+                {
+                  "id": 3,
+                  "name": "Task 3",
+                  "status": "undefined"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Mr. B",
+          "designation": null,
+          "skills": ["HTML", "CSS", "Photoshop"],
+          "projects": [
+            {
+              "name": "Project C",
+              "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "team": [
+                {
+                  "name": "David",
+                  "role": "Developer"
+                },
+                {
+                  "name": "Eve",
+                  "role": "Designer"
+                },
+                {
+                  "name": "undefined",
+                  "role": "Tester"
+                }
+              ],
+              "tasks": [
+                {
+                  "id": 1,
+                  "name": "Task 1",
+                  "status": "Completed"
+                },
+                {
+                  "id": 2,
+                  "name": null,
+                  "status": "Completed"
+                }
+              ]
+            }
+          ]
+        },
+       
+      ]
+    };
+
+    // Function to render employee data in the table
+    function renderEmployees(employees) {
+      var tableBody = document.getElementById('employeeTable');
+      tableBody.innerHTML = '';
+
+      employees.forEach(function (employee) {
+        var row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${employee.id}</td>
+          <td>${employee.name}</td>
+          <td>${employee.designation}</td>
+          <td>${employee.skills.join(', ')}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Function to filter employee data based on search input
+    function filterEmployees(searchTerm) {
+      var filteredEmployees = jsonData.employees.filter(function (employee) {
+        return employee.name.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      renderEmployees(filteredEmployees);
+    }
+
+    // Function to filter projects based on search input
+    function filterProjects(searchTerm) {
+      var filteredProjects = jsonData.employees.reduce(function (result, employee) {
+        var projects = employee.projects.filter(function (project) {
+          return project.name.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+        if (projects.length > 0) {
+          result.push({
+            employeeName: employee.name,
+            projects: projects
+          });
+        }
+        return result;
+      }, []);
+      
+      var tableBody = document.getElementById('employeeTable');
+      tableBody.innerHTML = '';
+
+      filteredProjects.forEach(function (item) {
+        item.projects.forEach(function (project) {
+          var row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.employeeName}</td>
+            <td>${project.name}</td>
+            <td>${project.description}</td>
+            <td>${project.team.length}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+    }
+
+    // Event listener for search input
+    var searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function () {
+      var searchTerm = searchInput.value;
+      filterEmployees(searchTerm);
+    });
+
+    // Event listener for search projects input
+    var searchProjectsInput = document.getElementById('searchProjectsInput');
+    searchProjectsInput.addEventListener('input', function () {
+      var searchTerm = searchProjectsInput.value;
+      filterProjects(searchTerm);
+    });
+
+    // Initial rendering of employee data
+    renderEmployees(jsonData.employees);
+  </script>
+
+</body>
+
+</html>
